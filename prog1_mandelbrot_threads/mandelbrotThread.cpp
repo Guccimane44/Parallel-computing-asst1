@@ -34,6 +34,24 @@ void workerThreadStart(WorkerArgs * const args) {
     // to compute a part of the output image.  For example, in a
     // program that uses two threads, thread 0 could compute the top
     // half of the image and thread 1 could compute the bottom half.
+    if (args->threadId == 0) {
+        mandelbrotSerial(args->x0, args->y0, args->x1, args->y1,
+                         args->width, args->height,
+                         0, args->height / 2,
+                         args->maxIterations,
+                         args->output);
+    } else {
+        if (args->threadId == 1) {
+            mandelbrotSerial(args->x0, args->y0, args->x1, args->y1,
+                             args->width, args->height,
+                             args->height / 2, args->height - (args->height / 2),
+                             args->maxIterations,
+                             args->output);
+        }else {
+               throw std::runtime_error("unexpected case: threadID is neither 0 nor 1");
+        }
+    }
+    
 
     printf("Hello world from thread %d\n", args->threadId);
 }
